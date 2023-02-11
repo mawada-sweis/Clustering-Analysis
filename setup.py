@@ -10,9 +10,9 @@ analysis_packages = ["jupyterlab==3.4.6"]
 
 # Define our package
 setup(
-    name="Clustering",
+    name="Citywide Mobility Clustering Analysis",
     version=1.0,
-    description="Provide best product for each segmentation.",
+    description="Assess the travel behavior, preferences, and attitudes of residents of NYC",
     python_requires=">=3.7",
     packages=find_namespace_packages(),
     install_requires=[required_packages],
