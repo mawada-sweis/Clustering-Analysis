@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: Clustering
-Version: 1.0
-Summary: Provide best product for each segmentation.
-Requires-Python: >=3.7
-Provides-Extra: dev
-Provides-Extra: docs
