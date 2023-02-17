@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import MinMaxScaler
 
 
 def one_hot_encoding(data, column):
@@ -24,4 +25,12 @@ def date_transform(data):
     data['last_travel_year'] = data['last_travel_date'].dt.year
     
     data.drop(columns= ['first_travel_date', 'last_travel_date', 'first_travel_year', 'last_travel_year'], inplace=True)
+    return data
+
+
+def scaling(data, columns):
+    scaler = MinMaxScaler()
+    scaler.fit(data[columns])
+    scaled_data = scaler.transform(data[columns])
+    data[columns] = scaled_data
     return data
