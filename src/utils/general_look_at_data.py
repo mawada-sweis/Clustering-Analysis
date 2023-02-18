@@ -48,10 +48,3 @@ def get_feature_missing(data):
     # Sort the results by descending order of missing_percentage
     return missing_stats[filter_not_zero_percentage].sort_values('missing_percentage', ascending=False)
 
-
-def display_missing_percentage(df):
-    # Filter rows with missing percentage greater than 0
-    filtered_stats = df[df['missing_percentage'] > 0]
-
-    # Return first two columns
-    return filtered_stats.iloc[:, :2]
