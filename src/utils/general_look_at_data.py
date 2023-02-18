@@ -1,3 +1,9 @@
+import math
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+
 def get_feature_types_stats(df):
     """
     Computes the data types of features in a DataFrame.
@@ -55,3 +61,42 @@ def display_direct_missing(df):
     # Return first two columns
     return filtered_stats.iloc[:, :2]
 
+
+def display_indirect_missing(df):
+    # Filter rows with missing percentage greater than 0
+    filtered_stats = df[df.drop(columns='feature_type').gt(0).any(axis=1)]
+
+    # Return indirect missing columns
+    return filtered_stats.drop(columns=['missing_count', 'missing_percentage'])
+
+
+def plot_indirect_missing(missing_data):
+    # Convert non-numeric values to NaN
+    missing_data = missing_data.apply(pd.to_numeric, errors='coerce')
+
+    # Filter features where the percentage is greater than zero
+    filtered_data = missing_data[missing_data.gt(0.0).any(axis=1)].drop(columns='feature_type')
+
+    # Create a bar plot of the missing data percentage for each feature
+    num_features = len(filtered_data.columns)
+    num_cols = 2
+    num_rows = math.ceil(num_features / num_cols)
+    fig, axs = plt.subplots(num_rows, num_cols, figsize=(10, 5*num_rows))
+
+    for i, column_name in enumerate(filtered_data.columns):
+        try:
+            filtered2_data = filtered_data[column_name][filtered_data[column_name].gt(0.0)].reset_index()
+            row_idx = i // num_cols
+            col_idx = i % num_cols
+            ax = axs[row_idx][col_idx]
+            sns.barplot(x=column_name, y='feature', data=filtered2_data, ax=ax)
+            ax.set_title(f'Missing Data by {column_name}')
+            ax.set_xlabel('Missing Data Percentage')
+            ax.set_ylabel('Feature')
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=5)
+
+        except ValueError:
+            print(f"No valid data found for {column_name}")
+    
+    plt.tight_layout()
+    plt.show()
