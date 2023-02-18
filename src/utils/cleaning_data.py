@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def delete_columns(data, columns_name) -> None:
     """Delete all columns mensioned in the given columns name list.
 
@@ -63,3 +66,37 @@ def fill_by_mode(data, columns_name) -> str:
     
     # Return a success message
     return "Provided column successfully filled by mode value."
+
+
+def filter_indirect_missing_columns(df, columns, lower_threshold=None, upper_threshold=None) -> list:
+    """
+    Filter a pandas DataFrame based on the percentage of indirect missing values for a list of columns.
+
+    Args:
+    - df: A pandas DataFrame
+    - columns: A list of column names to filter
+    - lower_threshold: A float indicating the lower threshold for the percentage of indirect missing values
+    - upper_threshold: A float indicating the upper threshold for the percentage of indirect missing values
+
+    Returns:
+    - A list of column names in the filtered DataFrame
+    """
+    
+    # Convert selected columns to numeric data type
+    df[columns] = df[columns].apply(pd.to_numeric, errors='coerce')
+
+    # Filter the DataFrame based on the user-provided thresholds for each column
+    if lower_threshold is None:
+        filtered_df = df.loc[df[columns].max(axis=1) > upper_threshold]
+
+    elif upper_threshold is None:
+        filtered_df = df.loc[df[columns].min(axis=1) < lower_threshold]
+    
+    else:
+        filtered_df = df.loc[
+            (df[columns].max(axis=1) > lower_threshold) & 
+            (df[columns].min(axis=1) < upper_threshold)
+        ]
+
+    # Return a list of the column names in the filtered DataFrame
+    return list(filtered_df.index)
