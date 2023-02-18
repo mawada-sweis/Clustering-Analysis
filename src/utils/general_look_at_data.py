@@ -54,12 +54,33 @@ def get_feature_missing(data):
     # Sort the results by descending order of missing_percentage
     return missing_stats[filter_not_zero_percentage].sort_values('missing_percentage', ascending=False)
 
+
 def display_direct_missing(df):
+    """
+    Filters a pandas DataFrame to display only the 
+    columns that have missing values and their corresponding 
+    percentage of missing values.
+
+    Args:
+        df (pandas DataFrame): The DataFrame to be filtered.
+
+    Returns:
+        pandas DataFrame or str: The filtered missing value 
+        statistics DataFrame, or a string indicating that 
+        there are no missing data of type NAN.    
+    """
     # Filter rows with missing percentage greater than 0
     filtered_stats = df[df['missing_percentage'] > 0]
+    
+    # Get first two columns
+    filtered_stats = filtered_stats.iloc[:, :2]
+    
+    # Check if there no missing data
+    if filtered_stats.shape[0] == 0:
+        filtered_stats = 'No Missing Data: NAN type'
 
-    # Return first two columns
-    return filtered_stats.iloc[:, :2]
+    # Return the filtered missing value statistics
+    return filtered_stats
 
 
 def display_indirect_missing(df):
