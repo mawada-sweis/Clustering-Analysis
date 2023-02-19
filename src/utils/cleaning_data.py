@@ -178,3 +178,15 @@ def get_features_based_type(data, missing_features):
     # Return the names of the one-hot encoded features and the numeric features
     return one_hot_natural, numeric_features, labeled_features
 
+
+def fill_numeric(data, numeric_features, missing_types_label):
+    if 995 in missing_types_label:
+        value_to_replace = 995
+        data[numeric_features] = data[numeric_features].replace(value_to_replace, 0)
+    
+    if -9998 in missing_types_label:
+        mode_value = data[numeric_features].mode().iloc[0][0]
+        data[numeric_features] = data[numeric_features].replace(-9998, mode_value)
+    
+    else:
+        return "Missing type is incorrect"
