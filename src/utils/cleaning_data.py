@@ -1,4 +1,5 @@
 import pandas as pd
+from IPython.display import display
 
 
 def delete_columns(data, columns_name) -> None:
@@ -100,3 +101,80 @@ def filter_indirect_missing_columns(df, columns, lower_threshold=None, upper_thr
 
     # Return a list of the column names in the filtered DataFrame
     return list(filtered_df.index)
+
+
+def _is_one_hot_encoded(df, col_name):
+    """
+    Returns True if the given column is one-hot encoded in the DataFrame, and False otherwise.
+
+    Args:
+    - df: A pandas DataFrame
+    - col_name: A string representing the name of the column
+
+    Returns:
+    - True if the column is one-hot encoded, and False otherwise
+    """
+    unique_vals = df[col_name].unique()
+
+    # Check if the column has only two unique values
+    if len(unique_vals) == 3:
+        return True
+
+    # Check if the column name contains an underscore followed by a unique value
+    col_name_parts = col_name.split('_')
+    if len(col_name_parts) > 1:
+        suffix = col_name_parts[-1]
+        if suffix in unique_vals:
+            return True
+
+    return False
+
+
+def _get_labeled_numeric_data(df, col_names):
+    """Get the labeled and numeric data columns from the DataFrame"""
+    labeled_cols = []
+    numeric_cols = []
+    for col_name in col_names:
+        col = df[col_name]
+        if pd.api.types.is_numeric_dtype(col):
+            if col.is_monotonic_increasing or col.is_monotonic_decreasing:
+                labeled_cols.append(col_name)
+            elif col.nunique() / col.size <= 0.05:
+                labeled_cols.append(col_name)
+            else:
+                numeric_cols.append(col_name)
+
+    # Return the names of the numeric features and the labeled features
+    return numeric_cols, labeled_cols
+
+
+def display_info_lists(data, list1_name, list1, list2_name, list2, list3_name, list3):
+    # Display the lengths of the three lists
+    print(f"Number of {list1_name} features {len(list1)},\n Number of {list2_name} features {len(list2)},\n Number of {list3_name} features {len(list3_name)}") 
+    
+    # Display a sample of the one-hot encoded features
+    print(f"Samples of {list1_name} features")
+    display(data[list1].sample(5))
+    
+    # Display a sample of the numeric features
+    print(f"Samples of {list2_name} features")
+    display(data[list3].sample(5))
+    
+    # Display a sample of the labeled features
+    print(f"Samples of {list3_name} features")
+    display(data[list3].sample(5))
+
+
+def get_features_based_type(data, missing_features):
+    # Get the names of the one-hot encoded features in natural language
+    one_hot_natural = [col for col in missing_features if _is_one_hot_encoded(data[missing_features], col)]
+
+    # Get the names of the numeric features
+    numeric_features = list(set(one_hot_natural).symmetric_difference(set(missing_features)))
+    numeric_features, labeled_features = _get_labeled_numeric_data(data, numeric_features)
+    
+    display_info_lists(data, "one-hot encoded", one_hot_natural, "numeric", numeric_features, "labeled", labeled_features)
+    
+    # Return the names of the one-hot encoded features and the numeric features
+    return one_hot_natural, numeric_features, labeled_features
+
