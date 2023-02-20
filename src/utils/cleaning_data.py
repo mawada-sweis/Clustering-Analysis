@@ -190,3 +190,44 @@ def fill_numeric(data, numeric_features, missing_types_label):
     
     else:
         return "Missing type is incorrect"
+
+
+def grouping_encoded_features(prefixes, features_names):
+    """
+    get the groups of features relative to same origin feature rely on prefix of its name
+    prefixes: the list of all prefixes of feature names
+    features_names: the list of all previously encoded features
+    """
+    encoded_features = {}
+
+    for prefix in prefixes:
+        encoded_features[prefix]= [col for col in features_names if col.startswith(prefix)]
+
+    return encoded_features
+
+
+def handle_missing_codes_encoded_features(data, prefixes, missing_code, encoded_features):
+    """
+    remove missing_code data from the features and add new feature for these data
+    data: data frame
+    missing code: list of codes to replcae its values [-9998, 999, 995]
+    prefixes: the list of all prefixes of feature names
+    encoded_features: the dictionary of all prefixes and the list of features start with each prefix
+    """
+
+    for prefix in prefixes:
+        "add new columns to dataframe for each miising code with initail value 0"
+        new_col_9998 = prefix+str(missing_code[0])
+        new_col_999 = prefix+str(missing_code[1])
+        data[new_col_9998]=0   
+        data[new_col_999]=0
+
+        "fill the rows with missing-codes in the new missing-code columns with value 1 ===> [-9998, 999]"
+        data.loc[data[encoded_features[prefix][0]]==missing_code[0],new_col_9998]=1
+        data.loc[data[encoded_features[prefix][0]]==missing_code[1],new_col_999]=1
+        
+        "replce value of all missing codes in the data frame with 0"
+        data.loc[data[encoded_features[prefix][0]]==missing_code[0],encoded_features[prefix]]= 0
+        data.loc[data[encoded_features[prefix][0]]==missing_code[1],encoded_features[prefix]]= 0
+        data.loc[data[encoded_features[prefix][0]]==missing_code[2],encoded_features[prefix]]= 0
+    return data
