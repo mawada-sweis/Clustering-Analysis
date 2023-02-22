@@ -7,6 +7,16 @@ from sklearn.preprocessing import OneHotEncoder
 
 def one_hot_encoding(data, column):
 
+    """
+    Applying One Hot Encoding 
+
+    Args:
+    data: dataframe 
+    column: list of columns name to encode
+
+    Return:
+    new dataframe with encoded columns
+    """
     # apply one hot encoding on categorical features
     encoder = OneHotEncoder()
     encoded = encoder.fit_transform(data[[column]])
@@ -22,15 +32,22 @@ def one_hot_encoding(data, column):
 
 
 def date_transform(data, columns):
-    # apply date transformation :
-    # extract day, month and year from each date 
-    # drop the original dates columns 
-    # drop extracted year because it is one unique value = 2019
+    """
+    Apply date transformation by extracting day, month and year from each date 
+
+    Args: 
+    data: dataframe
+    columns: list of columns names to be transformes
+
+    Return: 
+    new dataframe
+    """
 
     # convert to pandas datetime 
     for column in columns:
         data[column] = pd.to_datetime(data[column])
 
+        # name new columns 
         day_column_name = column+'_day'
         month_column_name = column+'_month'
         year_column_name = column+'_year'
@@ -40,9 +57,7 @@ def date_transform(data, columns):
         data[month_column_name] = data[column].dt.month
         data[year_column_name] = data[column].dt.year
    
-
-    
-        # drop original date columns
+    # drop original date columns
     data.drop(columns= columns, inplace=True)
 
     return data
@@ -50,8 +65,21 @@ def date_transform(data, columns):
 
 
 def scaling(data, columns, scaler):
-    # do feature scaling using min max scaler
-    scaler.fit(data[columns])
-    scaled_data = scaler.transform(data[columns])
+    """
+    Do feature scaling 
+    
+    Args:
+    data: dataframe
+    columns: list of columns names to be scaled
+    scaler: the scaler to use
+
+    Return: 
+    new data frame
+    """
+    # fit and transform the data with scaler
+    scaled_data = scaler.fit_transform(data[columns])
+
+    # restore scaled data into the data frame 
     data[columns] = scaled_data
+    
     return data
