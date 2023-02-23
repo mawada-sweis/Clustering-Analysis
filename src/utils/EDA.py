@@ -36,7 +36,7 @@ def plt_missing_data(data, title):
     plt.show()
 
 
-def create_histogram(data, bin=30, orientation='vertical', color='green', xlabel='', ylabel='', title=''):
+def create_histogram(data, bin=30, orientation='vertical',  xlabel='', ylabel='', title=''):
     """
     Creates a histogram of the given data.
 
@@ -52,33 +52,70 @@ def create_histogram(data, bin=30, orientation='vertical', color='green', xlabel
     Returns:
         None
     """
-    plt.hist(data, bins=bin, orientation=orientation, color=color)
+    plt.hist(data, bins=bin, orientation=orientation)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
     plt.show()
 
 
-def create_boxplot(data, labels, color='green', xlabel='', ylabel='', title=''):
+def create_stacked_histogram(df, column1, column2, bins=10, title="", xlabel="", ylabel="Frequency", orientation="vertical"):
     """
-    Creates a box plot of the given data.
+    Creates a stacked histogram of the given columns in the DataFrame.
 
     Args:
-        data (list or numpy array): The data to create a box plot of.
-        labels (list): The labels for the x-axis.
-        color (str, optional): The color of the boxes and whiskers.
+        df (pandas DataFrame): The DataFrame to create the histogram for.
+        column1 (str): The name of the first column to plot.
+        column2 (str): The name of the second column to plot.
+        bins (int, optional): The number of bins to use in the histogram.
+        orientation (str, optional): The orientation of the histogram, either 'vertical' (default) or 'horizontal'.
         xlabel (str, optional): The label for the x-axis.
         ylabel (str, optional): The label for the y-axis.
-        title (str, optional): The title of the box plot.
+        title (str, optional): The title of the histogram.
 
     Returns:
         None
     """
-    plt.boxplot(data, labels=labels, patch_artist=True, boxprops=dict(facecolor=color))
+    # Create histogram of first column
+    plt.hist(df[column1], bins=bins, alpha=0.5, label=column1, orientation=orientation)
+
+    # Create histogram of second column
+    plt.hist(df[column2], bins=bins, alpha=0.5, label=column2, orientation=orientation)
+
+    # Add legend and labels
+    plt.legend(loc='upper right')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
     plt.show()
+
+
+
+def create_boxplot(df, col_name):
+    """
+    Create a boxplot for a given column of a pandas DataFrame.
+
+    Args:
+        df (pandas.DataFrame): The DataFrame to plot.
+        col_name (str): The name of the column to plot.
+
+    Returns:
+        None
+    """
+    fig, ax = plt.subplots()
+    ax.boxplot(df[col_name].dropna())
+
+    plt.text(x = 1.2, y=df[col_name].min(), s='min')
+    plt.text(x = 1.2, y=df[col_name].quantile(0.25), s='Q1')
+    plt.text(x = 1.2, y=df[col_name].median(), s='median(Q2)')
+    plt.text(x = 1.2, y=df[col_name].quantile(0.75), s='Q3')
+    plt.text(x = 1.2, y=df[col_name].max(), s='max')
+
+    #add the graph title and axes labels
+    ax.set_title(f'Boxplot of {col_name}')
+    ax.set_ylabel(col_name)
+    plt.show()
+
 
 
 def create_scatterplot(x, y, xlabel='', ylabel='', title=''):
@@ -121,3 +158,4 @@ def create_correlation_heatmap(df, title=''):
                 annot_kws={"fontsize":8})
     plt.title(title)
     plt.show()
+
