@@ -81,7 +81,7 @@ def create_boxplot(data, labels, color='green', xlabel='', ylabel='', title=''):
     plt.show()
 
 
-def create_scatterplot(x, y, xlabel='', ylabel='', title=''):
+def create_scatterplot(x, y, xlabel='', ylabel='', title='', colors=None):
     """
     Creates a scatter plot of the given x and y data.
 
@@ -91,14 +91,48 @@ def create_scatterplot(x, y, xlabel='', ylabel='', title=''):
         xlabel (str, optional): The label for the x-axis.
         ylabel (str, optional): The label for the y-axis.
         title (str, optional): The title of the scatter plot.
+        colors (list or numpy array, optional): The color of each data point.
 
     Returns:
         None
     """
-    plt.scatter(x, y)
+    if colors is None:
+        plt.scatter(x, y)
+    else:
+        plt.scatter(x, y, c=colors, cmap='rainbow')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
+    plt.show()
+
+def create_3d_scatter_plot(X, labels=None, cmap='viridis', fig_size=(10,10), title=None, xlabel=None, ylabel=None, zlabel=None):
+    """
+    Create a scatter plot of a dataset with more than 3 dimensions.
+
+    Parameters:
+        X (array-like): The dataset to plot.
+        labels (array-like, optional): A list of labels for each data point.
+        cmap (str, optional): The colormap to use for coloring the data points.
+        fig_size (tuple, optional): The size of the figure (width, height) in inches.
+        title (str, optional): The title of the plot.
+        xlabel (str, optional): The label of the x-axis.
+        ylabel (str, optional): The label of the y-axis.
+        zlabel (str, optional): The label of the z-axis.
+    """
+    # Create a figure and axis object with 3D projection
+    fig = plt.figure(figsize=fig_size)
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Plot the reduced dataset in a 3D scatter plot
+    ax.scatter3D(X[:, 0], X[:, 1], X[:, 2], c=labels, cmap=cmap)
+
+    # Add labels and title
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_zlabel(zlabel)
+    ax.set_title(title)
+
+    # Show the plot
     plt.show()
 
 
