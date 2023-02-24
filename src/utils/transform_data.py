@@ -29,6 +29,7 @@ def one_hot_encoding(data: pd.DataFrame, categorical_features:list) -> pd.DataFr
     return pd.concat([data.drop(columns=categorical_features), encoded_df], axis=1)
 
 
+
 def date_transform(data: pd.DataFrame, date_columns:list) -> pd.DataFrame:
     """Extract day, month, and year from date columns in a dataframe.
 
