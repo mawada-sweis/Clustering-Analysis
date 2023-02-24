@@ -276,3 +276,20 @@ def handle_missing_codes_encoded_features(data: pd.DataFrame, missing_codes: lis
             data.loc[data[features[0]] == code, features] = 0
 
     return data
+
+
+def convert_missing_to_label(data: pd.DataFrame, ordinal_features:list, missing_codes:list, new_labels:list) -> pd.DataFrame:
+    """replace missing codes to label for ordinal features in a dataframe
+
+    Args:
+        data (pd.DataFrame): Input dataframe.
+        ordinal_features (list): List of column names to be encoded.
+        missing_codes (list): list of missing codes to fit
+        new_label_for_missing (list): list of new values to replace missing codes with. 
+
+    Returns:
+        pd.DataFrame: A new dataframe with new labels for missing.
+    """
+
+    data[ordinal_features] = data[ordinal_features].replace(to_replace = missing_codes, value = new_labels)
+    return data
