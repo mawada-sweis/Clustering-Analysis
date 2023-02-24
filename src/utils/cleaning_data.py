@@ -149,13 +149,13 @@ def _get_labeled_numeric_data(df: pd.DataFrame, col_names: list) -> tuple:
         
         # Check if the column is numeric and not one-hot encoded
         if pd.api.types.is_numeric_dtype(col) and not is_one_hot_encoded(df, col_name):
-            
+
             # Check if the column is labeled
-            if col.is_monotonic_increasing or col.is_monotonic_decreasing or col.nunique() / col.size <= 0.05:
+            if col.is_monotonic_increasing or col.is_monotonic_decreasing or col.dtype == 'int64':
                 labeled_cols.append(col_name)
             
             # Otherwise, add it to the list of numeric columns
-            else:
+            elif col.dtype == 'float':
                 numeric_cols.append(col_name)
 
     # Return the names of the numeric columns and the labeled columns as a tuple

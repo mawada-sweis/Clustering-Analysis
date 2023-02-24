@@ -3,83 +3,72 @@ import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 
 
-
-
-def one_hot_encoding(data, column):
-
-    """
-    Applying One Hot Encoding 
+def one_hot_encoding(data: pd.DataFrame, categorical_features:list) -> pd.DataFrame:
+    """Apply one hot encoding to categorical features in a dataframe.
 
     Args:
-    data: dataframe 
-    column: list of columns name to encode
+        data (pd.DataFrame): Input dataframe.
+        categorical_features (list): List of column names to be encoded.
 
-    Return:
-    new dataframe with encoded columns
+    Returns:
+        pd.DataFrame: A new dataframe with encoded columns.
+
     """
-    # apply one hot encoding on categorical features
+    # Instantiate the OneHotEncoder
     encoder = OneHotEncoder()
-    encoded = encoder.fit_transform(data[[column]])
 
-    # get_feature_names_out() : return all columns name 
-    # each contain the original column name + category value
-    data[encoder.get_feature_names_out()] = encoded.toarray()
+    # Apply one hot encoding to categorical features
+    encoded = encoder.fit_transform(data[categorical_features])
 
-    # drop the original categorical column
-    data.drop(column, inplace=True, axis=1)
-    return data
+    # Get the names of the encoded features
+    encoded_feature_names = encoder.get_feature_names_out()
+
+    # Create a new dataframe for the encoded features
+    encoded_df = pd.DataFrame(encoded.toarray(), columns=encoded_feature_names)
+
+    return pd.concat([data.drop(columns=categorical_features), encoded_df], axis=1)
 
 
-
-def date_transform(data, columns):
-    """
-    Apply date transformation by extracting day, month and year from each date 
+def date_transform(data: pd.DataFrame, date_columns:list) -> pd.DataFrame:
+    """Extract day, month, and year from date columns in a dataframe.
 
     Args: 
-    data: dataframe
-    columns: list of columns names to be transformes
+        data (pd.DataFrame): Input dataframe.
+        date_columns (list): List of column names to be transformed.
 
-    Return: 
-    new dataframe
+    Returns: 
+        pd.DataFrame: A new dataframe with transformed columns.
+
     """
-
-    # convert to pandas datetime 
-    for column in columns:
+    # Convert date columns to pandas datetime and extract new features
+    for column in date_columns:
         data[column] = pd.to_datetime(data[column])
-
-        # name new columns 
-        day_column_name = column+'_day'
-        month_column_name = column+'_month'
-        year_column_name = column+'_year'
-
-        # extract new features
-        data[day_column_name] = data[column].dt.day
-        data[month_column_name] = data[column].dt.month
-        data[year_column_name] = data[column].dt.year
+        data[column+'_day'] = data[column].dt.day
+        data[column+'_month'] = data[column].dt.month
+        data[column+'_year'] = data[column].dt.year
    
-    # drop original date columns
-    data.drop(columns= columns, inplace=True)
+    # Drop original date columns
+    data.drop(columns=date_columns, inplace=True)
 
     return data
 
 
+def scaling(data: pd.DataFrame, numeric_columns: list, scaler) -> pd.DataFrame:
+    """Apply feature scaling to numeric columns in a dataframe.
 
-def scaling(data, columns, scaler):
-    """
-    Do feature scaling 
-    
     Args:
-    data: dataframe
-    columns: list of columns names to be scaled
-    scaler: the scaler to use
+        data (pd.DataFrame): Input dataframe.
+        numeric_columns (list): List of column names to be scaled.
+        scaler: The scaler to use.
 
-    Return: 
-    new data frame
+    Returns: 
+        pd.DataFrame: A new dataframe with scaled columns.
+
     """
-    # fit and transform the data with scaler
-    scaled_data = scaler.fit_transform(data[columns])
+    # Fit and transform the data with the scaler
+    scaled_data = scaler.fit_transform(data[numeric_columns])
 
-    # restore scaled data into the data frame 
-    data[columns] = scaled_data
+    # Restore scaled data into the new dataframe 
+    data[numeric_columns] = scaled_data
     
     return data
