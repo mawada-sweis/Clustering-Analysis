@@ -4,22 +4,6 @@ import seaborn as sns
 import pandas as pd
 
 
-def get_feature_types_stats(df):
-    """
-    Computes the data types of features in a DataFrame.
-
-    Args:
-        df (pandas.DataFrame): The input DataFrame.
-
-    Returns:
-        pandas.DataFrame: A DataFrame containing the following columns:
-        - feature: the name of the feature
-        - feature_type: the data type of the feature
-    """
-    # Compute the data types of features in the DataFrame
-    return df.dtypes.rename('feature_type').reset_index().rename(columns={'index': 'feature'})
-
-
 def get_feature_missing(data):
     """
     Computes missing value statistics for each feature in a DataFrame.
@@ -41,7 +25,7 @@ def get_feature_missing(data):
         missing_stats[f'{label}_percentage'] = counts[label][f'{label}_count'] / len(data)
 
     # Add feature type information
-    feature_types_df = get_feature_types_stats(data)
+    feature_types_df = data.dtypes.rename('feature_type').reset_index().rename(columns={'index': 'feature'})
     missing_stats = missing_stats.rename(columns={'index': 'feature'}).merge(feature_types_df,
                                                                              on='feature',
                                                                              how='left')
