@@ -1,3 +1,8 @@
+import matplotlib.pyplot as plt
+from sklearn.metrics import silhouette_score
+from yellowbrick.cluster import KElbowVisualizer, SilhouetteVisualizer
+
+
 def calculate_silhouette_score(model_instance, potential_k, data):
     silhouette_score_result = [] 
     for k in potential_k:
@@ -16,7 +21,7 @@ def plot_silhouette_score(potential_k_range, silhouette_score_for_ks, model_name
     plt.title('Silhouette Analysis For Optimal k Using ' + model_name)
     plt.show()
     
-    
+
 def plot_silhoutte_k_mean(n_clusters, model, data):
     model_instance = model(n_clusters = n_clusters, n_init = "auto", random_state = 42)
     visualizer = SilhouetteVisualizer(model_instance, colors='yellowbrick')
