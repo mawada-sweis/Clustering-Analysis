@@ -1,15 +1,19 @@
+# Type hint
 from numpy import ndarray
+
+# Necessery libraries 
 import pandas as pd
 import numpy as np
 
-from scipy.cluster.hierarchy import dendrogram, linkage
-from scipy.cluster.hierarchy import fcluster
+# Hierarchical clustering
+from scipy.cluster.hierarchy import dendrogram, linkage, fclusterdata
 
+# visulaization
 import matplotlib.pyplot as plt
 
+# Dimensionality reduction
 from sklearn.decomposition import PCA
 
-from sklearn.metrics import silhouette_samples, silhouette_score
 
 # Define a list of colors to choose from
 colors_code = ['#609EA2', '#AA5656', '#F2921D', "#4E6C50"]
@@ -64,26 +68,6 @@ def plot_dendrogram_all_methods(data: pd.DataFrame, method_list=None, distance_m
     plt.show()
 
 
-def display_dendrogram(linkage_matrix: pd.DataFrame, method_type='ward') -> None:
-    """Display the dendrogram plot given a linkage matrix and a linkage method. 
-    The dendrogram plot shows the hierarchical clustering of the dataset.
-
-    Args:
-        linkage_matrix (pd.DataFrame): The linkage matrix of the dataset.
-        method_type (str): The linkage method to use. Defaults to 'ward'.
-    """
-    # Plot the dendrogram
-    dendrogram(linkage_matrix)
-
-    # Set the plot title and axis labels
-    plt.title(f'Dendrogram ({method_type} linkage)')
-    plt.xlabel('Sample Index')
-    plt.ylabel('Distance')
-
-    # Show the plot
-    plt.show()
-
-
 def plot_thresholded_dendrogram(linkage_matrix: ndarray, distance_threshold: int) -> None:
     """Plots the dendrogram with a horizontal line at the given threshold.
 
@@ -105,7 +89,7 @@ def plot_thresholded_dendrogram(linkage_matrix: ndarray, distance_threshold: int
     plt.show()
 
 
-def hierarchical_clustering(linkage_matrix: ndarray, k: int, criterion='maxclust') -> ndarray:
+def hierarchical_clustering(data: pd.DataFrame, k=3) -> ndarray:
     """To cluster one-hot encoded data using fcluster from hierarchical clustering algorithms.
 
     Args:
@@ -116,10 +100,10 @@ def hierarchical_clustering(linkage_matrix: ndarray, k: int, criterion='maxclust
     Returns:
         ndarray: An array of length n. T[i] is the flat cluster number to which original observation i belongs.
     """
-    return fcluster(linkage_matrix, k, criterion)
+    return fclusterdata(data, t=k, criterion='maxclust', method='ward')
 
 
-def _map_color_cluster(df: pd.DataFrame) -> pd.Series(str):
+def _map_color_cluster(labels: ndarray) -> pd.Series(str):
     """Assigns a color to each cluster in the given DataFrame based on their label.
     Args:
         df (pd.DataFrame): The DataFrame containing the cluster labels.
@@ -128,13 +112,13 @@ def _map_color_cluster(df: pd.DataFrame) -> pd.Series(str):
         pd.Series(str): A list of colors, where the i-th element corresponds to the color of the i-th row in the DataFrame.
     """
     # Get the unique cluster labels from the DataFrame
-    cluster_labels = df['cluster'].unique()
+    cluster_labels = np.unique(labels)
 
     # Assign a color to each cluster label
     cluster_colors = {label: colors_code[i] for i, label in enumerate(cluster_labels)}
-
+    
     # Create a new column in the DataFrame to store the cluster colors
-    return df['cluster'].apply(lambda x: cluster_colors[x])
+    return pd.Series(labels).apply(lambda x: cluster_colors[x])
 
 
 def get_transform_PCA(data: pd.DataFrame, dimensions: int) -> ndarray:
@@ -152,7 +136,7 @@ def get_transform_PCA(data: pd.DataFrame, dimensions: int) -> ndarray:
     return pca.fit_transform(data)
 
 
-def plot_clustering_before_reduction(data: pd.DataFrame, dimensions: int) -> None:
+def plot_clustering_before_reduction(data: pd.DataFrame, labels:ndarray, dimensions: int) -> None:
     """Generates a scatter plot of the clustering of data before reducing its dimensionality using PCA.
 
     Args:
@@ -169,7 +153,7 @@ def plot_clustering_before_reduction(data: pd.DataFrame, dimensions: int) -> Non
     transformed = get_transform_PCA(data, dimensions)
     
     # Assigns a color to each cluster in the given DataFrame based on their label.
-    colors = _map_color_cluster(data)
+    colors = _map_color_cluster(labels)
     
     # Set up plot
     fig = plt.figure()
@@ -192,7 +176,7 @@ def plot_clustering_before_reduction(data: pd.DataFrame, dimensions: int) -> Non
     plt.show()
 
 
-def plot_clustering_after_reduction(data: pd.DataFrame, transformed: ndarray, dimensions: int) -> None:
+def plot_clustering_after_reduction(labels: ndarray, transformed: ndarray, dimensions: int) -> None:
     """Generates a scatter plot of the clustering of data after reducing using the given transformed data by PCA.
 
     Args:
@@ -207,7 +191,7 @@ def plot_clustering_after_reduction(data: pd.DataFrame, transformed: ndarray, di
         raise ValueError("dimensions must be either 2 or 3")
     
     # Assigns a color to each cluster in the given DataFrame based on their label.
-    colors = _map_color_cluster(data)
+    colors = _map_color_cluster(labels)
     
     # Set up plot
     fig = plt.figure()
@@ -226,137 +210,4 @@ def plot_clustering_after_reduction(data: pd.DataFrame, transformed: ndarray, di
     ax.set_ylabel('PC2')
     
     # Show the plot
-    plt.show()
-
-
-def get_silhouette_vals_avg(data:pd.DataFrame):
-    """Compute the silhouette values and average silhouette score for a clustering result.
-
-    Args:
-        data (pd.DataFrame): A DataFrame with the clustering result in a column named 'cluster' and the feature matrix in the other columns.
-
-    Returns:
-        A tuple containing the cluster labels, an array of silhouette values for each point, and the average silhouette score.
-    """
-    # Extract the feature matrix and cluster labels from the input data
-    X = data.drop('cluster', axis=1)
-    labels = data['cluster']
-
-    # Compute the silhouette values for each point
-    silhouette_vals = silhouette_samples(X, labels)
-
-    # Compute the average silhouette score
-    silhouette_avg = silhouette_score(X, labels)
-
-    # Return the cluster labels, silhouette values, and average score as a tuple
-    return labels, silhouette_vals, silhouette_avg
-
-
-def plot_silhouette(data:pd.DataFrame) -> None:
-    """Plot the Silhouette values for each cluster in a clustering result.
-
-    Args:
-        data (pd.DataFrame): A DataFrame with the clustering result in a column named 
-            'cluster' and the feature matrix in the other columns.
-    """
-    # Get the cluster labels, Silhouette values, and average score from the input data
-    labels, silhouette_vals, silhouette_avg = get_silhouette_vals_avg(data)
-
-    # Create a new plot with a specified size
-    fig, ax = plt.subplots(figsize=(10, 6))
-
-    # Set the lower y-value for the first cluster
-    y_lower = 10
-
-    # Iterate over the unique cluster labels
-    for i in np.unique(labels):
-        # Select the Silhouette values for the current cluster label
-        ith_cluster_silhouette_vals = silhouette_vals[labels == i]
-
-        # Sort the Silhouette values for the current cluster label
-        ith_cluster_silhouette_vals.sort()
-
-        # Compute the size of the current cluster label
-        size_cluster_i = ith_cluster_silhouette_vals.shape[0]
-
-        # Set the upper y-value for the current cluster label
-        y_upper = y_lower + size_cluster_i
-
-        # Choose a color for the current cluster label
-        color = plt.cm.nipy_spectral(float(i) / np.max(labels))
-
-        # Fill the area between the lower and upper y-values with the Silhouette values for the current cluster label
-        ax.fill_betweenx(np.arange(y_lower, y_upper),
-                         0, ith_cluster_silhouette_vals,
-                         facecolor=color, edgecolor=color, alpha=0.7)
-
-        # Label the current cluster label at the middle of the Silhouette values
-        ax.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
-
-        # Set the lower y-value for the next cluster label
-        y_lower = y_upper + 10
-
-    # Set the x-label to Silhouette coefficient values
-    ax.set_xlabel("Silhouette coefficient values")
-
-    # Set the y-label to Cluster labels
-    ax.set_ylabel("Cluster labels")
-
-    # Add a vertical line at the average Silhouette score
-    ax.axvline(x=silhouette_avg, color="black", linestyle="--")
-
-    # Set the x-axis limits
-    ax.set_xlim([-0.1, 1])
-
-    # Highlight the cluster with the largest silhouette_avg
-    max_index = np.argmax(silhouette_avg)
-    ax.get_children()[max_index].set_facecolor('red')
-
-    # Show the plot
-    plt.show()
-
-
-def plot_avg_silhouette(datasets) -> None:
-    """Plots the average silhouette coefficient for a list of datasets and
-        highlights the dataset with the maximum value.
-
-    Args:
-        datasets (list of pd.DataFrame): A list of datasets where each dataset 
-            is a Pandas DataFrame with a 'cluster' column.
-    """
-    # Create a new figure with a single subplot
-    fig, ax = plt.subplots(figsize=(10, 6))
-
-    # Initialize the maximum average to zero
-    max_avg = 0
-
-    # Iterate through each dataset and calculate its silhouette coefficient average
-    for i, data in enumerate(datasets):
-        # Extract the feature matrix X and the cluster labels from the dataset
-        X = data.drop('cluster', axis=1)
-        labels = data['cluster']
-
-        # Calculate the silhouette coefficient average for this dataset
-        silhouette_avg = silhouette_score(X, labels)
-
-        # Add a scatter point for this dataset's silhouette coefficient average
-        ax.scatter(i, silhouette_avg, s=100, c='blue')
-
-        # If this dataset has the highest silhouette coefficient average so far, save its index and value
-        if silhouette_avg > max_avg:
-            max_avg = silhouette_avg
-            max_idx = i
-
-    # Add a scatter point to highlight the dataset with the highest silhouette coefficient average
-    ax.scatter(max_idx, max_avg, s=200, c='red', marker='*')
-
-    # Set the x-ticks and labels to indicate the dataset number
-    ax.set_xticks(range(len(datasets)))
-    ax.set_xticklabels([f"Dataset {i+1}" for i in range(len(datasets))])
-
-    # Set the x- and y-axis labels
-    ax.set_xlabel("Dataset")
-    ax.set_ylabel("Silhouette coefficient average")
-
-    # Display the plot
     plt.show()
