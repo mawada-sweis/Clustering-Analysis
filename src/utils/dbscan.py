@@ -6,13 +6,13 @@ import sys
 # modelling - dbscan
 from sklearn.cluster import DBSCAN
 from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics import silhouette_samples, silhouette_score
 
 # dimensionality reduction 
 from sklearn.decomposition import PCA
 
 # visulaization
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 def create_pca(data, n_components):
     """
@@ -89,3 +89,46 @@ def perform_dbscan(X_reduced, eps, min_samples):
     # Return the cluster labels
     return labels
 
+def range_hyperparameters(dataset, eps_range, minPts_range):
+    """
+    Performs DBSCAN on a dataset with a range of eps and minPts values.
+    
+    Parameters:
+        dataset (numpy.ndarray): The dataset to cluster.
+        eps_range (list): A list of eps values to test.
+        minPts_range (list): A list of minPts values to test.
+        
+    Returns:
+        pandas.DataFrame: A dataframe containing the results of each DBSCAN run.
+    """
+    
+    # Create empty dataframe to store results
+    results_df = pd.DataFrame(columns=["eps", "minPts", "silhouette_score", "n_clusters"])
+
+    # Loop through parameter ranges and perform DBSCAN on each combination
+    for eps in eps_range:
+        for minPts in minPts_range:
+
+            # Initialize DBSCAN with current parameter values
+            dbscan = DBSCAN(eps=eps, min_samples=minPts)
+
+            # Fit DBSCAN to data
+            labels = dbscan.fit_predict(dataset)
+
+            # Calculate silhouette score and number of clusters
+            if len(set(labels)) > 1:  # Skip if only one cluster is found
+                score = silhouette_score(dataset, labels)
+                n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+            else:
+                score = None
+                n_clusters = 0
+
+            # Drop row if number of clusters is 0 or 1
+            if n_clusters < 2:
+                continue
+
+            # Add results to dataframe
+            results = {"eps": eps, "minPts": minPts, "silhouette_score": score, "n_clusters": n_clusters}
+            results_df = pd.concat([results_df, pd.DataFrame(results, index=[0])], ignore_index=True)
+
+    return results_df
