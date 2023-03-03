@@ -1,6 +1,7 @@
 # Libraries 
 import pandas as pd
 import numpy as np 
+from sklearn.decomposition import PCA
 
 # Plotting
 import matplotlib.pyplot as plt
@@ -154,4 +155,27 @@ def create_correlation_heatmap(df, title=''):
                 cbar_kws={"shrink": .8}, linewidths=.5, center=0, vmax=1, vmin=-1,
                 annot_kws={"fontsize":8})
     plt.title(title)
+    plt.show()
+
+
+def create_PCA(data):
+    """
+    Creates a PCA plot of the given DataFrame.
+
+    Args:
+        df (pandas DataFrame): The DataFrame to create the correlation heatmap for.
+
+    Returns:
+        None
+    """
+    pca = PCA(n_components=7)
+    pca.fit(data)
+    variance = pca.explained_variance_ratio_ 
+    var=np.cumsum(np.round(variance, 3)*100)
+    plt.figure(figsize=(12,6))
+    plt.ylabel('% Variance Explained')
+    plt.xlabel('# of Features')
+    plt.title('PCA Analysis')
+    plt.ylim(0,100.5)
+    plt.plot(var)
     plt.show()
