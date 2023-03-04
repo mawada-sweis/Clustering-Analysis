@@ -70,7 +70,11 @@ def display_direct_missing(df):
 def display_indirect_missing(df):
     # Filter rows with missing percentage greater than 0
     filtered_stats = df[df.drop(columns='feature_type').gt(0).any(axis=1)]
-
+    
+    # Get indirect missing columns with at least one feature above 0.0
+    indirect_missing_cols = filtered_stats.drop(columns=['missing_count', 'missing_percentage'])
+    indirect_missing_cols = indirect_missing_cols.columns[indirect_missing_cols.any()]
+    
     # Return indirect missing columns
     return filtered_stats.drop(columns=['missing_count', 'missing_percentage'])
 
@@ -81,14 +85,20 @@ def plot_indirect_missing(missing_data):
 
     # Filter features where the percentage is greater than zero
     filtered_data = missing_data[missing_data.gt(0.0).any(axis=1)].drop(columns='feature_type')
-
+    
+    # Create a list of features that have non-zero missing data
+    non_zero_features = list(filtered_data.columns[filtered_data.any()])
+    
     # Create a bar plot of the missing data percentage for each feature
-    num_features = len(filtered_data.columns)
+    num_features = len(non_zero_features)
+    if num_features == 0:
+        print("No features found with missing data")
+        return
     num_cols = 2
     num_rows = math.ceil(num_features / num_cols)
     fig, axs = plt.subplots(num_rows, num_cols, figsize=(10, 5*num_rows))
 
-    for i, column_name in enumerate(filtered_data.columns):
+    for i, column_name in enumerate(non_zero_features):
         try:
             filtered2_data = filtered_data[column_name][filtered_data[column_name].gt(0.0)].reset_index()
             row_idx = i // num_cols
