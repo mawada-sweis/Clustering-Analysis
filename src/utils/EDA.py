@@ -36,7 +36,10 @@ def plt_missing_data(data, title):
     plt.show()
 
 
-def create_histogram(data, bin=30, orientation='vertical',  xlabel='', ylabel='', title=''):
+import numpy as np
+import matplotlib.pyplot as plt
+
+def create_histogram(data, bin=30, orientation='vertical', sort=True, xlabel='', ylabel='', title=''):
     """
     Creates a histogram of the given data.
 
@@ -44,7 +47,7 @@ def create_histogram(data, bin=30, orientation='vertical',  xlabel='', ylabel=''
         data (list or numpy array): The data to create a histogram.
         bin (int): The num of bins
         orientation (str, optional): The orientation of the histogram, either 'vertical' (default) or 'horizontal'.
-        color (str, optional): The color of the histogram bars.
+        sort (bool, optional): Whether to sort the values in data before creating the histogram. Defaults to True.
         xlabel (str, optional): The label for the x-axis.
         ylabel (str, optional): The label for the y-axis.
         title (str, optional): The title of the histogram.
@@ -52,6 +55,9 @@ def create_histogram(data, bin=30, orientation='vertical',  xlabel='', ylabel=''
     Returns:
         None
     """
+    if sort:
+        data = np.sort(data)
+
     plt.hist(data, bins=bin, orientation=orientation)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -59,7 +65,12 @@ def create_histogram(data, bin=30, orientation='vertical',  xlabel='', ylabel=''
     plt.show()
 
 
-def create_stacked_histogram(df, column1, column2, bins=10, title="", xlabel="", ylabel="Frequency", orientation="vertical"):
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+def create_stacked_histogram(df, column1, column2, bins=10, sort=True, title="", xlabel="", ylabel="Frequency", orientation="vertical"):
     """
     Creates a stacked histogram of the given columns in the DataFrame.
 
@@ -68,6 +79,7 @@ def create_stacked_histogram(df, column1, column2, bins=10, title="", xlabel="",
         column1 (str): The name of the first column to plot.
         column2 (str): The name of the second column to plot.
         bins (int, optional): The number of bins to use in the histogram.
+        sort (bool, optional): Whether to sort the data before creating the histogram. Defaults to True.
         orientation (str, optional): The orientation of the histogram, either 'vertical' (default) or 'horizontal'.
         xlabel (str, optional): The label for the x-axis.
         ylabel (str, optional): The label for the y-axis.
@@ -76,6 +88,9 @@ def create_stacked_histogram(df, column1, column2, bins=10, title="", xlabel="",
     Returns:
         None
     """
+    if sort:
+        df = df[[column1, column2]].apply(lambda x: np.sort(x), axis=0)
+    
     # Create histogram of first column
     plt.hist(df[column1], bins=bins, alpha=0.5, label=column1, orientation=orientation)
 
@@ -88,6 +103,7 @@ def create_stacked_histogram(df, column1, column2, bins=10, title="", xlabel="",
     plt.ylabel(ylabel)
     plt.title(title)
     plt.show()
+
 
 
 
