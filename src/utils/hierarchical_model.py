@@ -29,7 +29,7 @@ def get_linkage(data: pd.DataFrame, method_type='ward', distance_metric='euclide
         optimal_ordering (bool, optional): Whether to compute the optimal leaf ordering for the dendrogram. Default is False.
 
     Returns:
-        linkage_matrix (numpy.ndarray): The hierarchical clustering linkage matrix.
+        numpy.ndarray: The hierarchical clustering linkage matrix.
     """
     return linkage(data, method=method_type, metric=distance_metric, optimal_ordering=optimal_ordering)
 
@@ -73,7 +73,7 @@ def plot_thresholded_dendrogram(linkage_matrix: ndarray, distance_threshold: int
 
     Args:
         linkage_matrix (numpy.ndarray): The linkage matrix of the dataset.
-        threshold (float): The threshold distance to plot the horizontal line at.
+        distance_threshold (int): The threshold distance to plot the horizontal line at.
     """
     # Plot the dendrogram
     plt.figure(figsize=(10, 7))
@@ -93,20 +93,21 @@ def hierarchical_clustering(data: pd.DataFrame, k=3) -> ndarray:
     """To cluster one-hot encoded data using fcluster from hierarchical clustering algorithms.
 
     Args:
-        linkage_matrix (ndarray): The linkage matrix of the dataset.
+        data (pd.DataFrame): The dataset on which the hierarchical clustering will be performed.
         k (int): number of clusters.
-        criterion (str, optional): The criterion to use in forming flat clusters. Defaults to 'maxclust'.
 
     Returns:
-        ndarray: An array of length n. T[i] is the flat cluster number to which original observation i belongs.
+        ndarray: An array of length n containing a cluster label for each sample.
     """
     return fclusterdata(data, t=k, criterion='maxclust', method='ward')
 
 
 def _map_color_cluster(labels: ndarray) -> pd.Series(str):
     """Assigns a color to each cluster in the given DataFrame based on their label.
+    
     Args:
-        labels(ndarray): Contains the label of clustering for each sample.
+        labels (ndarray): Contains the label of clustering for each sample.
+    
     Returns:
         pd.Series(str): A list of colors, where the i-th element corresponds to the color of the i-th row in the DataFrame.
     """
@@ -127,6 +128,7 @@ def get_transform_PCA(data: pd.DataFrame, dimensions: int) -> ndarray:
     Args:
         data (pd.DataFrame): The input data to be transformed using PCA.
         dimensions (int): The number of dimensions to keep after the transformation.
+    
     Returns:
         ndarray: A numpy ndarray of shape (n_samples, dimensions) representing the transformed data.
     """
@@ -136,13 +138,14 @@ def get_transform_PCA(data: pd.DataFrame, dimensions: int) -> ndarray:
 
 
 def plot_clustering(data: pd.DataFrame, labels:ndarray, dimensions: int, is_before: bool) -> None:
-    """Generates a scatter plot of the clustering of data before reducing its dimensionality using PCA.
-
+    """Creates a scatter plot of data clustering after reducing dimensionality with PCA.
+    
     Args:
         data (pd.DataFrame): The input dataset to be plotted.
-        labels (ndarray):
-        dimensions (int): The number of dimensions to reduce the data to before plotting.
-        is_before (bool): 
+        labels (ndarray): Contains the label of clustering for each sample.
+        dimensions (int): The number of dimensions to visualize the data in.
+        is before (bool): Determine whether or not the labels came from clustering before applying PCA.
+    
     Raises:
         ValueError: To check the requested dimensions are either 2 or 3.
     """
