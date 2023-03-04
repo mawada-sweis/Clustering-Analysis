@@ -55,7 +55,7 @@ def plot_silhouette_score(potential_k: list, silhouette_score_for_ks: list, mode
     plt.xlabel('K') 
     plt.ylabel('Silhouette score')   
     plt.title('Silhouette Analysis For Optimal k Using ' + model_name)
-    plt.show()
+    plt.show()  
              
 
 def plot_silhouette(n_clusters, model, data) -> None:
