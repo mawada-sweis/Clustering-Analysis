@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plt_missing_data(data, title):
+def plt_missing_data(data: pd.DataFrame(), title: str)->None:
     '''
     Plots a bar chart showing the percentage of missing values for each column.
     
     Args:
         data (pandas.DataFrame): The DataFrame to plot.
-        str (str): A string to include in the chart title indicating the intended cleaning action.
+        title (str): A string to include in the chart title indicating the intended cleaning action.
 
     Returns:
         None. Displays a bar chart using matplotlib.
@@ -36,16 +36,14 @@ def plt_missing_data(data, title):
     plt.show()
 
 
-import numpy as np
-import matplotlib.pyplot as plt
 
-def create_histogram(data, bin=30, orientation='vertical', sort=True, xlabel='', ylabel='', title=''):
+def create_histogram(data: pd.DataFrame(), bin=30, orientation='vertical', sort=True, xlabel='Data', ylabel='Count', title='Histogram'):
     """
     Creates a histogram of the given data.
 
     Args:
         data (list or numpy array): The data to create a histogram.
-        bin (int): The num of bins
+        bin (int): The num of bins (30 default)
         orientation (str, optional): The orientation of the histogram, either 'vertical' (default) or 'horizontal'.
         sort (bool, optional): Whether to sort the values in data before creating the histogram. Defaults to True.
         xlabel (str, optional): The label for the x-axis.
@@ -65,10 +63,6 @@ def create_histogram(data, bin=30, orientation='vertical', sort=True, xlabel='',
     plt.show()
 
 
-
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 
 def create_stacked_histogram(df, column1, column2, bins=10, sort=True, title="", xlabel="", ylabel="Frequency", orientation="vertical"):
     """
@@ -107,7 +101,7 @@ def create_stacked_histogram(df, column1, column2, bins=10, sort=True, title="",
 
 
 
-def create_boxplot(df, col_name):
+def create_boxplot(df: pd.DataFrame(), col_name: str) -> None:
     """
     Create a boxplot for a given column of a pandas DataFrame.
 
@@ -121,6 +115,7 @@ def create_boxplot(df, col_name):
     fig, ax = plt.subplots()
     ax.boxplot(df[col_name].dropna())
 
+    # calculate and display outliers
     plt.text(x = 1.2, y=df[col_name].min(), s='min')
     plt.text(x = 1.2, y=df[col_name].quantile(0.25), s='Q1')
     plt.text(x = 1.2, y=df[col_name].median(), s='median(Q2)')
@@ -155,23 +150,4 @@ def create_scatterplot(x, y, xlabel='', ylabel='', title=''):
     plt.show()
 
 
-def create_correlation_heatmap(df, title=''):
-    """
-    Creates a correlation heatmap of the given DataFrame.
-
-    Args:
-        df (pandas DataFrame): The DataFrame to create the correlation heatmap for.
-        title (str, optional): The title of the heatmap.
-
-    Returns:
-        None
-    """
-    corr = df.corr()
-    mask = np.triu(np.ones_like(corr, dtype=bool))
-    cmap = sns.diverging_palette(230, 20, as_cmap=True)
-    sns.heatmap(corr, mask=mask, cmap=cmap, square=True, annot=True, fmt='.2f',
-                cbar_kws={"shrink": .8}, linewidths=.5, center=0, vmax=1, vmin=-1,
-                annot_kws={"fontsize":8})
-    plt.title(title)
-    plt.show()
 
