@@ -64,7 +64,7 @@ def create_histogram(data: pd.DataFrame(), bin=30, orientation='vertical', sort=
 
 
 
-def create_stacked_histogram(df, column1, column2, bins=10, sort=True, title="", xlabel="", ylabel="Frequency", orientation="vertical"):
+def create_stacked_histogram(df: pd.DataFrame(), column1, column2, bins=10, sort=True, title="", xlabel="", ylabel="Frequency", orientation="vertical") -> None:
     """
     Creates a stacked histogram of the given columns in the DataFrame.
 
@@ -72,7 +72,7 @@ def create_stacked_histogram(df, column1, column2, bins=10, sort=True, title="",
         df (pandas DataFrame): The DataFrame to create the histogram for.
         column1 (str): The name of the first column to plot.
         column2 (str): The name of the second column to plot.
-        bins (int, optional): The number of bins to use in the histogram.
+        bins (int, optional): The number of bins to use in the histogram. (10 is the default)
         sort (bool, optional): Whether to sort the data before creating the histogram. Defaults to True.
         orientation (str, optional): The orientation of the histogram, either 'vertical' (default) or 'horizontal'.
         xlabel (str, optional): The label for the x-axis.
