@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plt_missing_data(data: pd.DataFrame(), title: str)->None:
+def plt_missing_data(data: pd.DataFrame, title: str)->None:
     '''
     Plots a bar chart showing the percentage of missing values for each column.
     
@@ -37,7 +37,7 @@ def plt_missing_data(data: pd.DataFrame(), title: str)->None:
 
 
 
-def create_histogram(data: pd.DataFrame(), bin=30, orientation='vertical', sort=True, xlabel='Data', ylabel='Count', title='Histogram'):
+def create_histogram(data: pd.DataFrame, bin=30, orientation='vertical', sort=True, xlabel='Data', ylabel='Count', title='Histogram'):
     """
     Creates a histogram of the given data.
 
@@ -64,7 +64,7 @@ def create_histogram(data: pd.DataFrame(), bin=30, orientation='vertical', sort=
 
 
 
-def create_stacked_histogram(df: pd.DataFrame(), column1, column2, bins=10, sort=True, title="", xlabel="", ylabel="Frequency", orientation="vertical") -> None:
+def create_stacked_histogram(df: pd.DataFrame, column1, column2, bins=10, sort=True, title="", xlabel="", ylabel="Frequency", orientation="vertical") -> None:
     """
     Creates a stacked histogram of the given columns in the DataFrame.
 
@@ -101,7 +101,7 @@ def create_stacked_histogram(df: pd.DataFrame(), column1, column2, bins=10, sort
 
 
 
-def create_boxplot(df: pd.DataFrame(), col_name: str) -> None:
+def create_boxplot(df: pd.DataFrame, col_name: str) -> None:
     """
     Create a boxplot for a given column of a pandas DataFrame.
 
