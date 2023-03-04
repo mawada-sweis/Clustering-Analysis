@@ -149,13 +149,13 @@ def _get_labeled_numeric_data(df: pd.DataFrame, col_names: list) -> tuple:
         
         # Check if the column is numeric and not one-hot encoded
         if pd.api.types.is_numeric_dtype(col) and not is_one_hot_encoded(df, col_name):
-            
+
             # Check if the column is labeled
-            if col.is_monotonic_increasing or col.is_monotonic_decreasing or col.nunique() / col.size <= 0.05:
+            if col.is_monotonic_increasing or col.is_monotonic_decreasing or col.dtype == 'int64':
                 labeled_cols.append(col_name)
             
             # Otherwise, add it to the list of numeric columns
-            else:
+            elif col.dtype == 'float':
                 numeric_cols.append(col_name)
 
     # Return the names of the numeric columns and the labeled columns as a tuple
@@ -275,4 +275,21 @@ def handle_missing_codes_encoded_features(data: pd.DataFrame, missing_codes: lis
             data[new_col_name] = (data[features[0]] == code).astype(int)
             data.loc[data[features[0]] == code, features] = 0
 
+    return data
+
+
+def convert_missing_to_label(data: pd.DataFrame, ordinal_features:list, missing_codes:list, new_labels:list) -> pd.DataFrame:
+    """replace missing codes to label for ordinal features in a dataframe
+
+    Args:
+        data (pd.DataFrame): Input dataframe.
+        ordinal_features (list): List of column names to be encoded.
+        missing_codes (list): list of missing codes to fit
+        new_label_for_missing (list): list of new values to replace missing codes with. 
+
+    Returns:
+        pd.DataFrame: A new dataframe with new labels for missing.
+    """
+
+    data[ordinal_features] = data[ordinal_features].replace(to_replace = missing_codes, value = new_labels)
     return data
