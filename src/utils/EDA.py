@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 
 def plt_missing_data(data: pd.DataFrame, title: str) -> None:
+
     '''
     Plots a bar chart showing the percentage of missing values for each column.
     
@@ -35,7 +36,6 @@ def plt_missing_data(data: pd.DataFrame, title: str) -> None:
     plt.show()
 
 
-
 def create_histogram(data: pd.DataFrame, bin=30, orientation='vertical', sort=True, xlabel='Data', ylabel='Count', title='Histogram'):
     """
     Creates a histogram of the given data.
@@ -60,7 +60,6 @@ def create_histogram(data: pd.DataFrame, bin=30, orientation='vertical', sort=Tr
     plt.ylabel(ylabel)
     plt.title(title)
     plt.show()
-
 
 
 def create_stacked_histogram(df: pd.DataFrame, column1: str, column2: str, title: str, xlabel: str, bins=10, sort=True, ylabel="Frequency", orientation="vertical") -> None:
@@ -96,8 +95,6 @@ def create_stacked_histogram(df: pd.DataFrame, column1: str, column2: str, title
     plt.ylabel(ylabel)
     plt.title(title)
     plt.show()
-
-
 
 
 def create_boxplot(df: pd.DataFrame, col_name: str) -> None:
