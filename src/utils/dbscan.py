@@ -1,12 +1,11 @@
 # libraries
 import pandas as pd
 import numpy as np
-import sys
 
 # modelling - dbscan
 from sklearn.cluster import DBSCAN
 from sklearn.neighbors import NearestNeighbors
-from sklearn.metrics import silhouette_samples, silhouette_score
+from sklearn.metrics import silhouette_score
 
 # dimensionality reduction 
 from sklearn.decomposition import PCA
@@ -14,7 +13,7 @@ from sklearn.decomposition import PCA
 # visulaization
 import matplotlib.pyplot as plt
 
-def create_pca(data, n_components):
+def create_pca(data: pd.DataFrame, n_components: int) -> np.ndarray:
     """
     Apply Principal Component Analysis (PCA) to reduce the dimensionality of the input data.
 
@@ -37,12 +36,12 @@ def create_pca(data, n_components):
     # Return the reduced dataset
     return X_reduced
 
-def get_kdistances(data, k):
+def get_kdistances(data: pd.DataFrame, k: int) -> None:
     """
     Compute the k-distance for each data point in a dataset and plot the distances graph.
 
     Parameters:
-        data (array-like): The dataset to compute distances for.
+        data (pd.DataFrame): The dataset to compute distances for.
         k (int): The number of nearest neighbors to use.
 
     Prints k-distance graph
@@ -51,11 +50,11 @@ def get_kdistances(data, k):
         None
     """
     # Create a nearest neighbors object and fit it to the dataset
-    neigh = NearestNeighbors(n_neighbors=k)
-    neigh.fit(data)
+    nearest_neighbors = NearestNeighbors(n_neighbors=k)
+    nearest_neighbors.fit(data)
 
     # Compute the distances to the kth nearest neighbor for each data point
-    distances, _ = neigh.kneighbors(data)
+    distances, _ = nearest_neighbors.kneighbors(data)
     distances = np.sort(distances[:, k-1], axis=0)
 
     # Plot the distances
@@ -65,7 +64,7 @@ def get_kdistances(data, k):
     plt.show()
 
 
-def perform_dbscan(X_reduced, eps, min_samples):
+def perform_dbscan(X_reduced: np.ndarray, eps: float, min_samples: int) -> np.ndarray:
     """
     Perform DBSCAN clustering on a reduced dataset.
 
@@ -83,13 +82,11 @@ def perform_dbscan(X_reduced, eps, min_samples):
     # Fit the DBSCAN model to the reduced dataset
     dbscan.fit(X_reduced)
 
-    # Extract the cluster labels
-    labels = dbscan.labels_
-
     # Return the cluster labels
-    return labels
+    return dbscan.labels_ 
 
-def range_hyperparameters(dataset, eps_range, minPts_range):
+
+def range_hyperparameters(dataset: pd.DataFrame, eps_range:list, minPts_range:list) -> pd.DataFrame:
     """
     Performs DBSCAN on a dataset with a range of eps and minPts values.
     
