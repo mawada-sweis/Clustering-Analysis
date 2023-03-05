@@ -104,6 +104,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+
 env/
 venv/
 ENV/
@@ -134,4 +135,7 @@ EDA_Draft.ipynb
 functions.ipynb
 Transformer
 
+scratch.ipynb
+kmeans.ipynb
+algorithms
 
