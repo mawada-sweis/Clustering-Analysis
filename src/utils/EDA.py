@@ -4,10 +4,9 @@ import numpy as np
 
 # Plotting
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 
-def plt_missing_data(data: pd.DataFrame, title: str)->None:
+def plt_missing_data(data: pd.DataFrame, title: str) -> None:
     '''
     Plots a bar chart showing the percentage of missing values for each column.
     
@@ -64,7 +63,7 @@ def create_histogram(data: pd.DataFrame, bin=30, orientation='vertical', sort=Tr
 
 
 
-def create_stacked_histogram(df: pd.DataFrame, column1, column2, bins=10, sort=True, title="", xlabel="", ylabel="Frequency", orientation="vertical") -> None:
+def create_stacked_histogram(df: pd.DataFrame, column1: str, column2: str, title: str, xlabel: str, bins=10, sort=True, ylabel="Frequency", orientation="vertical") -> None:
     """
     Creates a stacked histogram of the given columns in the DataFrame.
 
@@ -75,9 +74,9 @@ def create_stacked_histogram(df: pd.DataFrame, column1, column2, bins=10, sort=T
         bins (int, optional): The number of bins to use in the histogram. (10 is the default)
         sort (bool, optional): Whether to sort the data before creating the histogram. Defaults to True.
         orientation (str, optional): The orientation of the histogram, either 'vertical' (default) or 'horizontal'.
-        xlabel (str, optional): The label for the x-axis.
-        ylabel (str, optional): The label for the y-axis.
-        title (str, optional): The title of the histogram.
+        xlabel (str): The label for the x-axis.
+        ylabel (str): The label for the y-axis.
+        title (str ): The title of the histogram.
 
     Returns:
         None
@@ -129,16 +128,16 @@ def create_boxplot(df: pd.DataFrame, col_name: str) -> None:
 
 
 
-def create_scatterplot(x, y, xlabel='', ylabel='', title=''):
+def create_scatterplot(x:list , y:list , xlabel: str, ylabel: str, title: str) -> None:
     """
     Creates a scatter plot of the given x and y data.
 
     Args:
         x (list or numpy array): The x-axis data.
         y (list or numpy array): The y-axis data.
-        xlabel (str, optional): The label for the x-axis.
-        ylabel (str, optional): The label for the y-axis.
-        title (str, optional): The title of the scatter plot.
+        xlabel (str): The label for the x-axis.
+        ylabel (str): The label for the y-axis.
+        title (str): The title of the scatter plot.
 
     Returns:
         None
@@ -148,6 +147,3 @@ def create_scatterplot(x, y, xlabel='', ylabel='', title=''):
     plt.ylabel(ylabel)
     plt.title(title)
     plt.show()
-
-
-
