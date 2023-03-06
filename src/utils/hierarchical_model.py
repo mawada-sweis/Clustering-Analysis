@@ -29,7 +29,7 @@ def get_linkage(data: pd.DataFrame, method_type='ward', distance_metric='euclide
         optimal_ordering (bool, optional): Whether to compute the optimal leaf ordering for the dendrogram. Default is False.
 
     Returns:
-        linkage_matrix (numpy.ndarray): The hierarchical clustering linkage matrix.
+        numpy.ndarray: The hierarchical clustering linkage matrix.
     """
     return linkage(data, method=method_type, metric=distance_metric, optimal_ordering=optimal_ordering)
 
@@ -73,7 +73,7 @@ def plot_thresholded_dendrogram(linkage_matrix: ndarray, distance_threshold: int
 
     Args:
         linkage_matrix (numpy.ndarray): The linkage matrix of the dataset.
-        threshold (float): The threshold distance to plot the horizontal line at.
+        distance_threshold (int): The threshold distance to plot the horizontal line at.
     """
     # Plot the dendrogram
     plt.figure(figsize=(10, 7))
@@ -93,21 +93,21 @@ def hierarchical_clustering(data: pd.DataFrame, k=3) -> ndarray:
     """To cluster one-hot encoded data using fcluster from hierarchical clustering algorithms.
 
     Args:
-        linkage_matrix (ndarray): The linkage matrix of the dataset.
+        data (pd.DataFrame): The dataset on which the hierarchical clustering will be performed.
         k (int): number of clusters.
-        criterion (str, optional): The criterion to use in forming flat clusters. Defaults to 'maxclust'.
 
     Returns:
-        ndarray: An array of length n. T[i] is the flat cluster number to which original observation i belongs.
+        ndarray: An array of length n containing a cluster label for each sample.
     """
     return fclusterdata(data, t=k, criterion='maxclust', method='ward')
 
 
 def _map_color_cluster(labels: ndarray) -> pd.Series(str):
     """Assigns a color to each cluster in the given DataFrame based on their label.
+    
     Args:
-        df (pd.DataFrame): The DataFrame containing the cluster labels.
-
+        labels (ndarray): Contains the label of clustering for each sample.
+    
     Returns:
         pd.Series(str): A list of colors, where the i-th element corresponds to the color of the i-th row in the DataFrame.
     """
@@ -128,6 +128,7 @@ def get_transform_PCA(data: pd.DataFrame, dimensions: int) -> ndarray:
     Args:
         data (pd.DataFrame): The input data to be transformed using PCA.
         dimensions (int): The number of dimensions to keep after the transformation.
+    
     Returns:
         ndarray: A numpy ndarray of shape (n_samples, dimensions) representing the transformed data.
     """
@@ -136,12 +137,15 @@ def get_transform_PCA(data: pd.DataFrame, dimensions: int) -> ndarray:
     return pca.fit_transform(data)
 
 
-def plot_clustering_before_reduction(data: pd.DataFrame, labels:ndarray, dimensions: int) -> None:
-    """Generates a scatter plot of the clustering of data before reducing its dimensionality using PCA.
-
+def plot_clustering(data: pd.DataFrame, labels:ndarray, dimensions: int, is_before: bool) -> None:
+    """Creates a scatter plot of data clustering after reducing dimensionality with PCA.
+    
     Args:
         data (pd.DataFrame): The input dataset to be plotted.
-        dimensions (int): The number of dimensions to reduce the data to before plotting.
+        labels (ndarray): Contains the label of clustering for each sample.
+        dimensions (int): The number of dimensions to visualize the data in.
+        is before (bool): Determine whether or not the labels came from clustering before applying PCA.
+    
     Raises:
         ValueError: To check the requested dimensions are either 2 or 3.
     """
@@ -149,9 +153,10 @@ def plot_clustering_before_reduction(data: pd.DataFrame, labels:ndarray, dimensi
     if dimensions not in [2, 3]:
         raise ValueError("dimensions must be either 2 or 3")
     
-    # Perform PCA on the data
-    transformed = get_transform_PCA(data, dimensions)
-    
+    if is_before:
+        # Perform PCA on the data
+        data = get_transform_PCA(data, dimensions)
+
     # Assigns a color to each cluster in the given DataFrame based on their label.
     colors = _map_color_cluster(labels)
     
@@ -161,51 +166,14 @@ def plot_clustering_before_reduction(data: pd.DataFrame, labels:ndarray, dimensi
     # Plot scatter by PCA transformed data
     if dimensions == 2:
         ax = fig.add_subplot(111)
-        ax.scatter(transformed[:, 0], transformed[:, 1], c=colors)
+        ax.scatter(data[:, 0], data[:, 1], c=colors)
     else:
         ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(transformed[:, 0], transformed[:, 1], transformed[:, 2], c=colors)
+        ax.scatter(data[:, 0], data[:, 1], data[:, 2], c=colors)
         ax.set_zlabel('PC3')
 
     # Set axis labels and title
     ax.set_title(f'{dimensions}-Dimension Clustering before PCA')
-    ax.set_xlabel('PC1')
-    ax.set_ylabel('PC2')
-    
-    # Show the plot
-    plt.show()
-
-
-def plot_clustering_after_reduction(labels: ndarray, transformed: ndarray, dimensions: int) -> None:
-    """Generates a scatter plot of the clustering of data after reducing using the given transformed data by PCA.
-
-    Args:
-        data (pd.DataFrame): The input dataset to be plotted.
-        transformed (ndarray): The transformed data using PCA. 
-        dimensions (int): The number of dimensions to reduce the data to after plotting.
-    Raises:
-        ValueError: To check the requested dimensions are either 2 or 3.
-    """
-    # Check the requested dimensions
-    if dimensions not in [2, 3]:
-        raise ValueError("dimensions must be either 2 or 3")
-    
-    # Assigns a color to each cluster in the given DataFrame based on their label.
-    colors = _map_color_cluster(labels)
-    
-    # Set up plot
-    fig = plt.figure()
-    if dimensions == 2:
-        ax = fig.add_subplot(111)
-        ax.scatter(transformed[:, 0], transformed[:, 1], c=colors)
-    
-    else:
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(transformed[:, 0], transformed[:, 1], transformed[:, 2], c=colors)
-        ax.set_zlabel('PC3')
-
-    # Set axis labels and title
-    ax.set_title(f'{dimensions}-Dimension Clustering after PCA')
     ax.set_xlabel('PC1')
     ax.set_ylabel('PC2')
     
